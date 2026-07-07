@@ -58,7 +58,7 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
 #game-area { display: none; flex-direction: column; align-items: center; gap: 12px; }
 #score-board { font-size: 18px; color: #0f0; text-shadow: 0 0 6px #0f0; display: flex; gap: 24px; }
 #score-board span { color: #fff; }
-#game-canvas { border: 2px solid #0ff; border-radius: 8px; box-shadow: 0 0 20px rgba(0,255,255,0.3); background: #16213e; }
+#game-canvas { border: 2px solid #0ff; border-radius: 8px; box-shadow: 0 0 20px rgba(0,255,255,0.3); background: #16213e; touch-action: none; }
 #game-hud { display: flex; gap: 12px; }
 .hud-btn { padding: 6px 14px; font-size: 13px; font-family: inherit; color: #0ff; background: rgba(0,255,255,0.1); border: 1px solid rgba(0,255,255,0.4); border-radius: 6px; cursor: pointer; transition: all 0.3s; }
 .hud-btn:hover { background: rgba(0,255,255,0.2); }
@@ -460,14 +460,20 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
   document.getElementById('btn-right').addEventListener('click', function(){setDir(1,0);});
   var tx, ty;
   document.addEventListener('touchstart', function(e){
-    if(document.getElementById('game-area').style.display === 'flex') { tx=e.touches[0].clientX; ty=e.touches[0].clientY; }
-  });
+    if(document.getElementById('game-area').style.display === 'flex') {
+      var t = e.target;
+      if(t.closest && (t.closest('#mobile-controls') || t.closest('#game-hud'))) { tx = undefined; return; }
+      tx=e.touches[0].clientX; ty=e.touches[0].clientY;
+    }
+  }, {passive:true});
   document.addEventListener('touchend', function(e){
     if(document.getElementById('game-area').style.display === 'flex' && tx !== undefined) {
       var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+      tx = undefined;
+      if(Math.abs(dx) < 24 && Math.abs(dy) < 24) return;
       if(Math.abs(dx)>Math.abs(dy)){setDir(dx>0?1:-1,0);}else{setDir(0,dy>0?1:-1);}
     }
-  });
+  }, {passive:true});
   loadSettings(); loadHighScores();
   document.getElementById('high-score-display').textContent = highScores.length > 0 ? highScores[0].score : 0;
 })();
