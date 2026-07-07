@@ -337,6 +337,7 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
   function getThemeColors() { return THEME_MAP[settings.theme] || THEME_MAP.cyber; }
   function draw() {
     var tc = getThemeColors();
+    var isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
     gameCtx.fillStyle = tc.bg;
     gameCtx.fillRect(0,0,gameCanvas.width,gameCanvas.height);
     gameCtx.strokeStyle = 'rgba(255,255,255,0.03)';
@@ -358,7 +359,7 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
     if(!running && !gameOver) {
       gameCtx.fillStyle='rgba(0,0,0,0.5)'; gameCtx.fillRect(0,0,gameCanvas.width,gameCanvas.height);
       gameCtx.fillStyle=tc.snakeHead; gameCtx.font='bold 22px Microsoft YaHei'; gameCtx.textAlign='center';
-      gameCtx.fillText('按空格键开始', gameCanvas.width/2, gameCanvas.height/2);
+      gameCtx.fillText(isTouch ? '点击下方开始按钮' : '按空格键开始', gameCanvas.width/2, gameCanvas.height/2);
     } else if (paused) {
       gameCtx.fillStyle='rgba(0,0,0,0.5)'; gameCtx.fillRect(0,0,gameCanvas.width,gameCanvas.height);
       gameCtx.fillStyle='#ff0'; gameCtx.font='bold 22px Microsoft YaHei'; gameCtx.textAlign='center';
@@ -370,7 +371,7 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
       gameCtx.fillStyle='#fff'; gameCtx.font='18px Microsoft YaHei';
       gameCtx.fillText('得分：'+score, gameCanvas.width/2, gameCanvas.height/2+16);
       gameCtx.fillStyle=tc.snakeHead; gameCtx.font='14px Microsoft YaHei';
-      gameCtx.fillText('按空格键重新开始', gameCanvas.width/2, gameCanvas.height/2+48);
+      gameCtx.fillText(isTouch ? '点击下方重来按钮' : '按空格键重新开始', gameCanvas.width/2, gameCanvas.height/2+48);
     }
   }
   function roundRect(c,x,y,w,h,r) {
@@ -420,6 +421,7 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
     if(gameOver) { start(); return; }
     togglePause();
   }
+  window.handlePauseBtn = handlePauseBtn;
   function updatePauseBtn() {
     var btn = document.getElementById('pause-btn');
     if(paused) { btn.textContent = '继续 (P)'; }
