@@ -207,7 +207,7 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
   </div>
 <canvas id="game-canvas" width="400" height="400"></canvas>
   <div id="game-hud">
-    <button class="hud-btn" onclick="togglePause()">暂停 (P)</button>
+    <button class="hud-btn" id="pause-btn" onclick="handlePauseBtn()">开始 (P)</button>
     <button class="hud-btn" onclick="showScreen('menu')">返回菜单</button>
   </div>
   <div id="hint">方向键 / WASD 控制方向，空格键开始或暂停</div>
@@ -413,11 +413,22 @@ kbd { display: inline-block; padding: 2px 8px; background: #222; border: 1px sol
     if(!gameCtx) return;
     if(running && !paused && !gameOver) return;
     if(gameOver) { initGame(); }
-    running = true; paused = false; draw(); restartTimer();
+    running = true; paused = false; draw(); restartTimer(); updatePauseBtn();
+  }
+  function handlePauseBtn() {
+    if(!running && !gameOver && !paused) { start(); return; }
+    if(gameOver) { start(); return; }
+    togglePause();
+  }
+  function updatePauseBtn() {
+    var btn = document.getElementById('pause-btn');
+    if(paused) { btn.textContent = '继续 (P)'; }
+    else if(gameOver) { btn.textContent = '重来 (P)'; }
+    else { btn.textContent = '暂停 (P)'; }
   }
   function togglePause() {
     if(!running || gameOver) return;
-    paused = !paused; if(paused) clearInterval(timer); else restartTimer(); draw();
+    paused = !paused; if(paused) clearInterval(timer); else restartTimer(); updatePauseBtn(); draw();
   }
   function setDir(dx,dy) {
     if(!dirQueue || !dir) return;
